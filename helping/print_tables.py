@@ -12,9 +12,13 @@ def print_summary_table(history):
 
 def print_table_multivar(history):
     marq = bool(history) and "mu_k" in history[0]
+    dfp = bool(history) and "A_k" in history[0]
     head = [f"{'k':>2}", f"{'x^k':^22}", f"{'f(x^k)':>9}", f"{'||grad||':>9}"]
     if marq:
         head += [f"{'mu_k':>9}", f"{'Попыток':>7}", f"{'d^k':^22}", f"{'x^(k+1)':^22}", f"{'f(x^(k+1))':>10}"]
+    elif dfp:
+        head += [f"{'A^k':^44}", f"{'d^k':^22}", f"{'t_k':>8}", f"{'x^(k+1)':^22}",
+                 f"{'||norm_x||':>8}", f"{'|mod_fx|':>8}", f"{'Условия':^7}"]
     else:
         head += [f"{'d^k':^8}", f"{'t_k':>8}", f"{'x^(k+1)':^22}", f"{'||norm_x||':>8}",
                  f"{'|mod_fx|':>8}", f"{'Условия':^7}"]
@@ -27,6 +31,13 @@ def print_table_multivar(history):
             dk = f"({row['d'][0]:.4f}; {row['d'][1]:.4f})"
             cells += [f"{row['mu_k']:>9.4f}", f"{row['trials']:>7}", f"{dk:^22}", f"{xk1:^22}",
                       f"{row['f_xk1']:>10.4f}"]
+        elif dfp:
+            ok = "да" if row["ok"] else "нет"
+            A = row["A_k"]
+            Ak = f"(({A[0][0]:.4f}; {A[0][1]:.4f}); ({A[1][0]:.4f}; {A[1][1]:.4f}))"
+            dk = f"({row['d'][0]:.4f}; {row['d'][1]:.4f})"
+            cells += [f"{Ak:^44}", f"{dk:^22}", f"{row['t_k']:>8.4f}", f"{xk1:^22}",
+                      f"{row['norm_x']:>8.4f}", f"{row['mod_fx']:>8.4f}", f"{ok:^7}"]
         else:
             ok = "да" if row["ok"] else "нет"
             cells += [f"{row.get('direction', ''):^8}", f"{row['t_k']:>8.4f}", f"{xk1:^22}",
