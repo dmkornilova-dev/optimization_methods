@@ -5,6 +5,7 @@ from helping.var9 import (f2 as f, grad_f2 as grad, hess_f2 as hess, # целе�
                           A, B, C, D, E, F, # коэффициенты целевой функции
                           U, V, W, # коэффициенты ограничения
                           X_MIN_CONSTRAINED) # аналитический условный минимум
+from helping.print_tables import print_table_constrained
 
 # методы одномерной минимизации
 from methods.lab3.dichotomy import dichotomy_method
@@ -52,18 +53,6 @@ MIN_METHODS = {
 }
 
 
-def print_table_lagrange(history): # для функции двух переменных с одним ограничением-равенством
-    print(f"{'k':>2} | {'r_k':>8} | {'lambda_k':>12} | {'x^k':^24} | {'x*':^24} | "
-          f"{'f(x*)':>11} | {'L(x*)':>11} | {'g(x*)':>12} | {'P(x*)':>12} | "
-          f"{'Внутр. ит.':>10} | {'Выч. L':>8}")
-    for row in history:
-        xk = f"({row['x_k'][0]:.6f}; {row['x_k'][1]:.6f})"
-        xk1 = f"({row['x_k1'][0]:.6f}; {row['x_k1'][1]:.6f})"
-        print(f"{row['k']:>2} | {row['r_k']:>8.2g} | {row['lambda_k'][0]:>12.6f} | {xk:^24} | {xk1:^24} | "
-              f"{row['f_xk1']:>11.6f} | {row['L_xk1']:>11.6f} | {row['g_eq'][0]:>12.3e} | "
-              f"{row['P']:>12.3e} | {row['inner_iter']:>10} | {row['inner_evals']:>8}")
-
-
 def run_method(name, step_name=None):
     params = dict(MIN_METHODS[name])
     params["eps1"] = EPS1
@@ -90,7 +79,7 @@ def run_method(name, step_name=None):
     res = lagrange_method(f, grad, hess, X0, EQUALITIES, INEQUALITIES,
                           R0, C_LAGR, LAMBDA_0, MU_0, EPS, min_method=params,
                           M=M_OUTER, verbose=VERBOSE)
-    print_table_lagrange(res.history)
+    print_table_constrained(res.history)
     print(f"Найденная точка: x* = ({res.x[0]:.6f}; {res.x[1]:.6f}), f(x*) = {res.f_x:.6f}")
     print(f"g1(x*) = {res.history[-1]['g_eq'][0]:.6e}, |P(x*)| = {abs(res.extra['P']):.6e}")
     if res.extra["reason"] == "step4":
