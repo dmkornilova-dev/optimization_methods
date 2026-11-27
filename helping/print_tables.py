@@ -43,3 +43,39 @@ def print_table_multivar(history):
             cells += [f"{row.get('direction', ''):^8}", f"{row['t_k']:>8.4f}", f"{xk1:^22}",
                       f"{row['norm_x']:>8.4f}", f"{row['mod_fx']:>8.4f}", f"{ok:^7}"]
         print(" | ".join(cells))
+
+def print_table_constrained(history):
+    # для функции двух переменных с одним ограничением-равенством
+    lagrange = bool(history) and "lambda_k" in history[0]
+    func_name = "L" if lagrange else "F"
+
+    head = [f"{'k':>2}", f"{'r_k':>8}"]
+
+    if lagrange:
+        head += [f"{'lambda_k':>12}"]
+
+    head += [f"{'x^k':^24}", f"{'x*':^24}",
+             f"{'f(x*)':>11}", f"{func_name + '(x*)':>11}",
+             f"{'g(x*)':>12}", f"{'P(x*)':>12}",
+             f"{'Внутр. ит.':>10}", f"{'Выч. ' + func_name:>8}"]
+
+    print(" | ".join(head))
+
+    for row in history:
+        xk = f"({row['x_k'][0]:.6f}; {row['x_k'][1]:.6f})"
+        xk1 = f"({row['x_k1'][0]:.6f}; {row['x_k1'][1]:.6f})"
+
+        cells = [f"{row['k']:>2}", f"{row['r_k']:>8.2g}"]
+
+        if lagrange:
+            cells += [f"{row['lambda_k'][0]:>12.6f}"]
+
+        cells += [f"{xk:^24}", f"{xk1:^24}",
+                  f"{row['f_xk1']:>11.6f}",
+                  f"{row[func_name + '_xk1']:>11.6f}",
+                  f"{row['g_eq'][0]:>12.3e}",
+                  f"{row['P']:>12.3e}",
+                  f"{row['inner_iter']:>10}",
+                  f"{row['inner_evals']:>8}"]
+
+        print(" | ".join(cells))
